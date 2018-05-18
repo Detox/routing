@@ -5,17 +5,17 @@
  * @license 0BSD
  */
 (function(){
-  var PUBLIC_KEY_LENGTH, MAC_LENGTH, ROUTING_PATH_SEGMENT_TIMEOUT, MAX_DATA_SIZE, ROUTER_PACKET_SIZE;
+  var PUBLIC_KEY_LENGTH, MAC_LENGTH, ROUTING_PATH_SEGMENT_TIMEOUT, ROUTER_PACKET_SIZE;
   PUBLIC_KEY_LENGTH = 32;
   MAC_LENGTH = 16;
   ROUTING_PATH_SEGMENT_TIMEOUT = 10;
-  MAX_DATA_SIZE = Math.pow(2, 16) - 1;
   ROUTER_PACKET_SIZE = 512 - 3;
-  function Wrapper(detoxCrypto, detoxUtils, ronion, fixedSizeMultiplexer, asyncEventer){
-    var are_arrays_equal, concat_arrays, ArrayMap;
+  function Wrapper(detoxCrypto, detoxTransport, detoxUtils, ronion, fixedSizeMultiplexer, asyncEventer){
+    var are_arrays_equal, concat_arrays, ArrayMap, MAX_DATA_SIZE;
     are_arrays_equal = detoxUtils['are_arrays_equal'];
     concat_arrays = detoxUtils['concat_arrays'];
     ArrayMap = detoxUtils['ArrayMap'];
+    MAX_DATA_SIZE = detoxTransport['MAX_DATA_SIZE'];
     /**
      * @constructor
      *
@@ -386,10 +386,10 @@
     };
   }
   if (typeof define === 'function' && define['amd']) {
-    define(['@detox/crypto', '@detox/utils', 'ronion', 'fixed-size-multiplexer', 'async-eventer'], Wrapper);
+    define(['@detox/crypto', '@detox/transport', '@detox/utils', 'ronion', 'fixed-size-multiplexer', 'async-eventer'], Wrapper);
   } else if (typeof exports === 'object') {
-    module.exports = Wrapper(require('@detox/crypto'), require('@detox/utils'), require('ronion'), require('fixed-size-multiplexer'), require('async-eventer'));
+    module.exports = Wrapper(require('@detox/crypto'), require('@detox/transport'), require('@detox/utils'), require('ronion'), require('fixed-size-multiplexer'), require('async-eventer'));
   } else {
-    this['detox_transport'] = Wrapper(this['detox_crypto'], this['detox_utils'], this['ronion'], this['fixed_size_multiplexer'], this['async_eventer']);
+    this['detox_transport'] = Wrapper(this['detox_crypto'], this['detox_transport'], this['detox_utils'], this['ronion'], this['fixed_size_multiplexer'], this['async_eventer']);
   }
 }).call(this);

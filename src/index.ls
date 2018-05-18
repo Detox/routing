@@ -9,15 +9,14 @@ const PUBLIC_KEY_LENGTH				= 32
 const MAC_LENGTH					= 16
 # Max time in seconds allowed for routing path segment creation after which creation is considered failed
 const ROUTING_PATH_SEGMENT_TIMEOUT	= 10
-# 65 KiB is what is enough for transport messages and will also be enough for routing data, bigger data will be multiplexed on higher levels when necessary
-const MAX_DATA_SIZE					= 2 ** 16 - 1
 # 3 bytes (2 for multiplexer and 1 for command) smaller than packet size on peer connection in order to avoid fragmentation when sending over peer connection
 const ROUTER_PACKET_SIZE			= 512 - 3
 
-function Wrapper (detox-crypto, detox-utils, ronion, fixed-size-multiplexer, async-eventer)
+function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size-multiplexer, async-eventer)
 	are_arrays_equal	= detox-utils['are_arrays_equal']
 	concat_arrays		= detox-utils['concat_arrays']
 	ArrayMap			= detox-utils['ArrayMap']
+	MAX_DATA_SIZE		= detox-transport['MAX_DATA_SIZE']
 	/**
 	 * @constructor
 	 *
@@ -341,10 +340,10 @@ function Wrapper (detox-crypto, detox-utils, ronion, fixed-size-multiplexer, asy
 
 if typeof define == 'function' && define['amd']
 	# AMD
-	define(['@detox/crypto', '@detox/utils', 'ronion', 'fixed-size-multiplexer', 'async-eventer'], Wrapper)
+	define(['@detox/crypto', '@detox/transport', '@detox/utils', 'ronion', 'fixed-size-multiplexer', 'async-eventer'], Wrapper)
 else if typeof exports == 'object'
 	# CommonJS
-	module.exports = Wrapper(require('@detox/crypto'), require('@detox/utils'), require('ronion'), require('fixed-size-multiplexer'), require('async-eventer'))
+	module.exports = Wrapper(require('@detox/crypto'), require('@detox/transport'), require('@detox/utils'), require('ronion'), require('fixed-size-multiplexer'), require('async-eventer'))
 else
 	# Browser globals
-	@'detox_transport' = Wrapper(@'detox_crypto', @'detox_utils', @'ronion', @'fixed_size_multiplexer', @'async_eventer')
+	@'detox_transport' = Wrapper(@'detox_crypto', @'detox_transport', @'detox_utils', @'ronion', @'fixed_size_multiplexer', @'async_eventer')
