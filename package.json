@@ -1,0 +1,36 @@
+{
+	"name"            : "@detox/routing",
+	"description"     : "Anonymous routing implementation from Detox project",
+	"keywords"        : [
+		"detox",
+		"routing",
+		"onion",
+		"anonymous"
+	],
+	"version"         : "0.1.0",
+	"homepage"        : "https://github.com/Detox/routing",
+	"author"          : "Nazar Mokrynskyi <nazar@mokrynskyi.com>",
+	"repository"      : {
+		"type" : "git",
+		"url"  : "git://github.com/Detox/routing.git"
+	},
+	"license"         : "0BSD",
+	"main"            : "src/index.js",
+	"files"           : [
+		"src"
+	],
+	"scripts"         : {
+		"test" : "tape tests/**/*.js"
+	},
+	"dependencies"    : {
+		"@detox/crypto"          : "^0.7.0",
+		"@detox/utils"           : "^1.6.0",
+		"async-eventer"          : "^1.1.5",
+		"fixed-size-multiplexer" : "^1.0.2",
+		"ronion"                 : "^0.7.0"
+	},
+	"devDependencies" : {
+		"build-gc" : "^0.1.1",
+		"tape"     : "^4.9.0"
+	}
+}
