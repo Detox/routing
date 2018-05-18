@@ -1,5 +1,5 @@
 # Detox routing [![Travis CI](https://img.shields.io/travis/Detox/routing/master.svg?label=Travis%20CI)](https://travis-ci.org/Detox/routing)
-Anonymous routing implementation from Detox project.
+Anonymous routing implementation for Detox project.
 
 This is a domain-specific implementation of anonymous routing functionality with simple API.
 It is built on top of [Ronion](https://github.com/nazar-pc/ronion) framework and uses `@detox/crypto` for cryptographic needs.

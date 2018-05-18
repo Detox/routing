@@ -1,6 +1,6 @@
 {
 	"name"            : "@detox/routing",
-	"description"     : "Anonymous routing implementation from Detox project",
+	"description"     : "Anonymous routing implementation for Detox project",
 	"keywords"        : [
 		"detox",
 		"routing",
