@@ -11,10 +11,11 @@
   ROUTING_PATH_SEGMENT_TIMEOUT = 10;
   ROUTER_PACKET_SIZE = 512 - 3;
   function Wrapper(detoxCrypto, detoxTransport, detoxUtils, ronion, fixedSizeMultiplexer, asyncEventer){
-    var are_arrays_equal, concat_arrays, ArrayMap, MAX_DATA_SIZE;
+    var are_arrays_equal, concat_arrays, ArrayMap, timeoutSet, MAX_DATA_SIZE;
     are_arrays_equal = detoxUtils['are_arrays_equal'];
     concat_arrays = detoxUtils['concat_arrays'];
     ArrayMap = detoxUtils['ArrayMap'];
+    timeoutSet = detoxUtils['timeoutSet'];
     MAX_DATA_SIZE = detoxTransport['MAX_DATA_SIZE'];
     /**
      * @constructor
@@ -273,19 +274,19 @@
               }
               current_node_encryptor_instance = detoxCrypto['Encryptor'](true, x25519_public_key);
               encryptor_instances.set(current_node, current_node_encryptor_instance);
-              segment_extension_timeout = setTimeout(function(){
+              segment_extension_timeout = timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, function(){
                 this$._ronion['off']('extend_response', extend_response_handler);
                 fail();
-              }, ROUTING_PATH_SEGMENT_TIMEOUT * 1000);
+              });
               this$._ronion['extend_request'](first_node, route_id, current_node, current_node_encryptor_instance['get_handshake_message']());
             }
             extend_request();
           }
           this$._ronion['on']('create_response', create_response_handler);
-          segment_establishment_timeout = setTimeout(function(){
+          segment_establishment_timeout = timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, function(){
             this$._ronion['off']('create_response', create_response_handler);
             fail();
-          }, ROUTING_PATH_SEGMENT_TIMEOUT * 1000);
+          });
           route_id = this$._ronion['create_request'](first_node, first_node_encryptor_instance['get_handshake_message']());
           source_id = concat_arrays([first_node, route_id]);
           this$._encryptor_instances.set(source_id, encryptor_instances);

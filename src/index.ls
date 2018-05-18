@@ -16,6 +16,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 	are_arrays_equal	= detox-utils['are_arrays_equal']
 	concat_arrays		= detox-utils['concat_arrays']
 	ArrayMap			= detox-utils['ArrayMap']
+	timeoutSet			= detox-utils['timeoutSet']
 	MAX_DATA_SIZE		= detox-transport['MAX_DATA_SIZE']
 	/**
 	 * @constructor
@@ -251,17 +252,17 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 							return
 						current_node_encryptor_instance	:= detox-crypto['Encryptor'](true, x25519_public_key)
 						encryptor_instances.set(current_node, current_node_encryptor_instance)
-						segment_extension_timeout		:= setTimeout (!~>
+						segment_extension_timeout		:= timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, !~>
 							@_ronion['off']('extend_response', extend_response_handler)
 							fail()
-						), ROUTING_PATH_SEGMENT_TIMEOUT * 1000
+						)
 						@_ronion['extend_request'](first_node, route_id, current_node, current_node_encryptor_instance['get_handshake_message']())
 					extend_request()
 				@_ronion['on']('create_response', create_response_handler)
-				segment_establishment_timeout	= setTimeout (!~>
+				segment_establishment_timeout	= timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, !~>
 					@_ronion['off']('create_response', create_response_handler)
 					fail()
-				), ROUTING_PATH_SEGMENT_TIMEOUT * 1000
+				)
 				route_id						= @_ronion['create_request'](first_node, first_node_encryptor_instance['get_handshake_message']())
 				source_id						= concat_arrays([first_node, route_id])
 				@_encryptor_instances.set(source_id, encryptor_instances)
