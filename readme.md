@@ -36,7 +36,7 @@ requirejs(['@detox/routing'], function (detox_routing) {
 Constructor for Router object, offers anonymous routing functionality based on [Ronion](https://github.com/nazar-pc/ronion) spec and reference implementation with just a few high-level APIs available for the user.
 
 * `dht_private_key` - X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
-* `max_pending_segments` - How much segments can be in pending state per one address
+* `max_pending_segments` - How many segments can be in pending state per one address
 
 ### detox_routing.Router.process_packet(node_id : Uint8Array, packet : Uint8Array)
 Process routing packet coming from node with specified ID.

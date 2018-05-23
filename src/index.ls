@@ -22,7 +22,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 	 * @constructor
 	 *
 	 * @param {!Uint8Array}	dht_private_key			X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
-	 * @param {number}		max_pending_segments	How much segments can be in pending state per one address
+	 * @param {number}		max_pending_segments	How many segments can be in pending state per one address
 	 *
 	 * @return {!Router}
 	 *
