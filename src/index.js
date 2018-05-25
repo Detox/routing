@@ -5,10 +5,9 @@
  * @license 0BSD
  */
 (function(){
-  var PUBLIC_KEY_LENGTH, MAC_LENGTH, ROUTING_PATH_SEGMENT_TIMEOUT, ROUTER_PACKET_SIZE;
+  var PUBLIC_KEY_LENGTH, MAC_LENGTH, ROUTER_PACKET_SIZE;
   PUBLIC_KEY_LENGTH = 32;
   MAC_LENGTH = 16;
-  ROUTING_PATH_SEGMENT_TIMEOUT = 10;
   ROUTER_PACKET_SIZE = 512 - 3;
   function Wrapper(detoxCrypto, detoxTransport, detoxUtils, ronion, fixedSizeMultiplexer, asyncEventer){
     var are_arrays_equal, concat_arrays, ArrayMap, timeoutSet, MAX_DATA_SIZE;
@@ -20,27 +19,32 @@
     /**
      * @constructor
      *
-     * @param {!Uint8Array}	dht_private_key			X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
-     * @param {number}		max_pending_segments	How many segments can be in pending state per one address
+     * @param {!Uint8Array}	dht_private_key					X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
+     * @param {number}		max_pending_segments			How many segments can be in pending state per one address
+     * @param {number=}		routing_path_segment_timeout	Max time in seconds allowed for routing path segment creation after which creation is considered failed
      *
      * @return {!Router}
      *
      * @throws {Error}
      */
-    function Router(dht_private_key, max_pending_segments){
+    function Router(dht_private_key, max_pending_segments, routing_path_segment_timeout){
       var this$ = this;
       max_pending_segments == null && (max_pending_segments = 10);
+      routing_path_segment_timeout == null && (routing_path_segment_timeout = 10);
       if (!(this instanceof Router)) {
-        return new Router(dht_private_key, max_pending_segments);
+        return new Router(dht_private_key, max_pending_segments, routing_path_segment_timeout);
       }
       asyncEventer.call(this);
+      this._routing_path_segment_timeout = routing_path_segment_timeout;
       this._encryptor_instances = ArrayMap();
       this._rewrapper_instances = ArrayMap();
       this._last_node_in_routing_path = ArrayMap();
       this._multiplexers = ArrayMap();
       this._demultiplexers = ArrayMap();
       this._established_routing_paths = ArrayMap();
-      this._ronion = ronion(ROUTER_PACKET_SIZE, PUBLIC_KEY_LENGTH, MAC_LENGTH, max_pending_segments)['on']('activity', function(address, segment_id){
+      this._ronion = ronion(ROUTER_PACKET_SIZE, PUBLIC_KEY_LENGTH, MAC_LENGTH, max_pending_segments);
+      this._max_packet_data_size = this._ronion['get_max_command_data_length']();
+      this._ronion['on']('activity', function(address, segment_id){
         this$['fire']('activity', address, segment_id);
       })['on']('create_request', function(address, segment_id, command_data){
         var source_id, encryptor_instance, e, rewrapper_instance, encryptor_instances, rewrapper_instances;
@@ -165,7 +169,6 @@
         }
         data['unwrapped'] = rewrapper_instance['unwrap'](wrapped);
       });
-      this._max_packet_data_size = this._ronion['get_max_command_data_length']();
     }
     Router.prototype = {
       /**
@@ -274,7 +277,7 @@
               }
               current_node_encryptor_instance = detoxCrypto['Encryptor'](true, x25519_public_key);
               encryptor_instances.set(current_node, current_node_encryptor_instance);
-              segment_extension_timeout = timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, function(){
+              segment_extension_timeout = timeoutSet(this$._routing_path_segment_timeout, function(){
                 this$._ronion['off']('extend_response', extend_response_handler);
                 fail();
               });
@@ -283,7 +286,7 @@
             extend_request();
           }
           this$._ronion['on']('create_response', create_response_handler);
-          segment_establishment_timeout = timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, function(){
+          segment_establishment_timeout = timeoutSet(this$._routing_path_segment_timeout, function(){
             this$._ronion['off']('create_response', create_response_handler);
             fail();
           });

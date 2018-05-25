@@ -4,13 +4,11 @@
  * @license 0BSD
  */
 # Length of Ed25519 public key in bytes
-const PUBLIC_KEY_LENGTH				= 32
+const PUBLIC_KEY_LENGTH		= 32
 # ChaChaPoly+BLAKE2b
-const MAC_LENGTH					= 16
-# Max time in seconds allowed for routing path segment creation after which creation is considered failed
-const ROUTING_PATH_SEGMENT_TIMEOUT	= 10
+const MAC_LENGTH			= 16
 # 3 bytes (2 for multiplexer and 1 for command) smaller than packet size on peer connection in order to avoid fragmentation when sending over peer connection
-const ROUTER_PACKET_SIZE			= 512 - 3
+const ROUTER_PACKET_SIZE	= 512 - 3
 
 function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size-multiplexer, async-eventer)
 	are_arrays_equal	= detox-utils['are_arrays_equal']
@@ -21,25 +19,29 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 	/**
 	 * @constructor
 	 *
-	 * @param {!Uint8Array}	dht_private_key			X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
-	 * @param {number}		max_pending_segments	How many segments can be in pending state per one address
+	 * @param {!Uint8Array}	dht_private_key					X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
+	 * @param {number}		max_pending_segments			How many segments can be in pending state per one address
+	 * @param {number=}		routing_path_segment_timeout	Max time in seconds allowed for routing path segment creation after which creation is considered failed
 	 *
 	 * @return {!Router}
 	 *
 	 * @throws {Error}
 	 */
-	!function Router (dht_private_key, max_pending_segments = 10)
+	!function Router (dht_private_key, max_pending_segments = 10, routing_path_segment_timeout = 10)
 		if !(@ instanceof Router)
-			return new Router(dht_private_key, max_pending_segments)
+			return new Router(dht_private_key, max_pending_segments, routing_path_segment_timeout)
 		async-eventer.call(@)
 
-		@_encryptor_instances		= ArrayMap()
-		@_rewrapper_instances		= ArrayMap()
-		@_last_node_in_routing_path	= ArrayMap()
-		@_multiplexers				= ArrayMap()
-		@_demultiplexers			= ArrayMap()
-		@_established_routing_paths	= ArrayMap()
-		@_ronion					= ronion(ROUTER_PACKET_SIZE, PUBLIC_KEY_LENGTH, MAC_LENGTH, max_pending_segments)
+		@_routing_path_segment_timeout	= routing_path_segment_timeout
+		@_encryptor_instances			= ArrayMap()
+		@_rewrapper_instances			= ArrayMap()
+		@_last_node_in_routing_path		= ArrayMap()
+		@_multiplexers					= ArrayMap()
+		@_demultiplexers				= ArrayMap()
+		@_established_routing_paths		= ArrayMap()
+		@_ronion						= ronion(ROUTER_PACKET_SIZE, PUBLIC_KEY_LENGTH, MAC_LENGTH, max_pending_segments)
+		@_max_packet_data_size			= @_ronion['get_max_command_data_length']()
+		@_ronion
 			.'on'('activity', (address, segment_id) !~>
 				@'fire'('activity', address, segment_id)
 			)
@@ -153,7 +155,6 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 					return
 				data['unwrapped']	= rewrapper_instance['unwrap'](wrapped)
 			)
-		@_max_packet_data_size	= @_ronion['get_max_command_data_length']()
 
 	Router:: =
 		/**
@@ -252,14 +253,14 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 							return
 						current_node_encryptor_instance	:= detox-crypto['Encryptor'](true, x25519_public_key)
 						encryptor_instances.set(current_node, current_node_encryptor_instance)
-						segment_extension_timeout		:= timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, !~>
+						segment_extension_timeout		:= timeoutSet(@_routing_path_segment_timeout, !~>
 							@_ronion['off']('extend_response', extend_response_handler)
 							fail()
 						)
 						@_ronion['extend_request'](first_node, route_id, current_node, current_node_encryptor_instance['get_handshake_message']())
 					extend_request()
 				@_ronion['on']('create_response', create_response_handler)
-				segment_establishment_timeout	= timeoutSet(ROUTING_PATH_SEGMENT_TIMEOUT, !~>
+				segment_establishment_timeout	= timeoutSet(@_routing_path_segment_timeout, !~>
 					@_ronion['off']('create_response', create_response_handler)
 					fail()
 				)

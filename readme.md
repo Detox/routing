@@ -32,11 +32,12 @@ requirejs(['@detox/routing'], function (detox_routing) {
 ### detox_routing.ready(callback)
 * `callback` - Callback function that is called when library is ready for use
 
-### detox_routing.Router(dht_private_key : Uint8Array, max_pending_segments = 10 : number) : detox_routing.Router
+### detox_routing.Router(dht_private_key : Uint8Array, max_pending_segments = 10 : number, routing_path_segment_timeout = 10 : number) : detox_routing.Router
 Constructor for Router object, offers anonymous routing functionality based on [Ronion](https://github.com/nazar-pc/ronion) spec and reference implementation with just a few high-level APIs available for the user.
 
 * `dht_private_key` - X25519 private key that corresponds to Ed25519 key used in `DHT` constructor (from `@detox/dht` package)
-* `max_pending_segments` - How many segments can be in pending state per one address
+* `max_pending_segments` - how many segments can be in pending state per one address
+* `routing_path_segment_timeout` - max time in seconds allowed for routing path segment creation after which creation is considered failed
 
 ### detox_routing.Router.process_packet(node_id : Uint8Array, packet : Uint8Array)
 Process routing packet coming from node with specified ID.

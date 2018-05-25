@@ -7,7 +7,7 @@
 		"onion",
 		"anonymous"
 	],
-	"version"         : "0.3.0",
+	"version"         : "0.3.1",
 	"homepage"        : "https://github.com/Detox/routing",
 	"author"          : "Nazar Mokrynskyi <nazar@mokrynskyi.com>",
 	"repository"      : {
