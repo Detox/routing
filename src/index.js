@@ -51,7 +51,7 @@
         if (this$._destroyed) {
           return;
         }
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         if (this$._encryptor_instances.has(source_id)) {
           return;
         }
@@ -84,7 +84,7 @@
         if (this$._destroyed) {
           return;
         }
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         last_node_in_routing_path = this$._last_node_in_routing_path.get(source_id);
         if (!are_arrays_equal(target_address, last_node_in_routing_path)) {
           return;
@@ -107,7 +107,7 @@
         segment_id = data['segment_id'];
         target_address = data['target_address'];
         plaintext = data['plaintext'];
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         encryptor_instance = (ref$ = this$._encryptor_instances.get(source_id)) != null ? ref$.get(target_address) : void 8;
         if (!encryptor_instance || !encryptor_instance['ready']()) {
           return;
@@ -122,7 +122,7 @@
         segment_id = data['segment_id'];
         target_address = data['target_address'];
         ciphertext = data['ciphertext'];
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         encryptor_instance = (ref$ = this$._encryptor_instances.get(source_id)) != null ? ref$.get(target_address) : void 8;
         if (!encryptor_instance || !encryptor_instance['ready']()) {
           return;
@@ -147,7 +147,7 @@
         segment_id = data['segment_id'];
         target_address = data['target_address'];
         unwrapped = data['unwrapped'];
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         rewrapper_instance = (ref$ = this$._rewrapper_instances.get(source_id)) != null ? (ref1$ = ref$.get(target_address)) != null ? ref1$[0] : void 8 : void 8;
         if (!rewrapper_instance) {
           return;
@@ -162,7 +162,7 @@
         segment_id = data['segment_id'];
         target_address = data['target_address'];
         wrapped = data['wrapped'];
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         rewrapper_instance = (ref$ = this$._rewrapper_instances.get(source_id)) != null ? (ref1$ = ref$.get(target_address)) != null ? ref1$[1] : void 8 : void 8;
         if (!rewrapper_instance) {
           return;
@@ -291,7 +291,7 @@
             fail();
           });
           route_id = this$._ronion['create_request'](first_node, first_node_encryptor_instance['get_handshake_message']());
-          source_id = concat_arrays([first_node, route_id]);
+          source_id = concat_arrays(first_node, route_id);
           this$._encryptor_instances.set(source_id, encryptor_instances);
           this$._rewrapper_instances.set(source_id, rewrapper_instances);
           this$._last_node_in_routing_path.set(source_id, last_node_in_routing_path);
@@ -330,7 +330,7 @@
         if (data.length > MAX_DATA_SIZE) {
           return;
         }
-        source_id = concat_arrays([node_id, route_id]);
+        source_id = concat_arrays(node_id, route_id);
         target_address = this._last_node_in_routing_path.get(source_id);
         multiplexer = this._multiplexers.get(source_id);
         if (!multiplexer) {
@@ -363,7 +363,7 @@
        */,
       _destroy_routing_path: function(address, segment_id){
         var source_id, encryptor_instances;
-        source_id = concat_arrays([address, segment_id]);
+        source_id = concat_arrays(address, segment_id);
         encryptor_instances = this._encryptor_instances.get(source_id);
         if (!encryptor_instances) {
           return;

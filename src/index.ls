@@ -48,7 +48,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 			.'on'('create_request', (address, segment_id, command_data) !~>
 				if @_destroyed
 					return
-				source_id	= concat_arrays([address, segment_id])
+				source_id	= concat_arrays(address, segment_id)
 				if @_encryptor_instances.has(source_id)
 					# Something wrong is happening, refuse to handle
 					return
@@ -80,7 +80,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 			.'on'('data', (address, segment_id, target_address, command, command_data) !~>
 				if @_destroyed
 					return
-				source_id					= concat_arrays([address, segment_id])
+				source_id					= concat_arrays(address, segment_id)
 				last_node_in_routing_path	= @_last_node_in_routing_path.get(source_id)
 				if !are_arrays_equal(target_address, last_node_in_routing_path)
 					# We only accept data back from responder
@@ -101,7 +101,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 				segment_id			= data['segment_id']
 				target_address		= data['target_address']
 				plaintext			= data['plaintext']
-				source_id			= concat_arrays([address, segment_id])
+				source_id			= concat_arrays(address, segment_id)
 				encryptor_instance	= @_encryptor_instances.get(source_id)?.get(target_address)
 				if !encryptor_instance || !encryptor_instance['ready']()
 					return
@@ -114,7 +114,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 				segment_id			= data['segment_id']
 				target_address		= data['target_address']
 				ciphertext			= data['ciphertext']
-				source_id			= concat_arrays([address, segment_id])
+				source_id			= concat_arrays(address, segment_id)
 				encryptor_instance	= @_encryptor_instances.get(source_id)?.get(target_address)
 				if !encryptor_instance || !encryptor_instance['ready']()
 					return
@@ -136,7 +136,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 				segment_id			= data['segment_id']
 				target_address		= data['target_address']
 				unwrapped			= data['unwrapped']
-				source_id			= concat_arrays([address, segment_id])
+				source_id			= concat_arrays(address, segment_id)
 				rewrapper_instance	= @_rewrapper_instances.get(source_id)?.get(target_address)?[0]
 				if !rewrapper_instance
 					return
@@ -149,7 +149,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 				segment_id			= data['segment_id']
 				target_address		= data['target_address']
 				wrapped				= data['wrapped']
-				source_id			= concat_arrays([address, segment_id])
+				source_id			= concat_arrays(address, segment_id)
 				rewrapper_instance	= @_rewrapper_instances.get(source_id)?.get(target_address)?[1]
 				if !rewrapper_instance
 					return
@@ -265,7 +265,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 					fail()
 				)
 				route_id						= @_ronion['create_request'](first_node, first_node_encryptor_instance['get_handshake_message']())
-				source_id						= concat_arrays([first_node, route_id])
+				source_id						= concat_arrays(first_node, route_id)
 				@_encryptor_instances.set(source_id, encryptor_instances)
 				@_rewrapper_instances.set(source_id, rewrapper_instances)
 				@_last_node_in_routing_path.set(source_id, last_node_in_routing_path)
@@ -297,7 +297,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 				return
 			if data.length > MAX_DATA_SIZE
 				return
-			source_id		= concat_arrays([node_id, route_id])
+			source_id		= concat_arrays(node_id, route_id)
 			target_address	= @_last_node_in_routing_path.get(source_id)
 			multiplexer		= @_multiplexers.get(source_id)
 			if !multiplexer
@@ -320,7 +320,7 @@ function Wrapper (detox-crypto, detox-transport, detox-utils, ronion, fixed-size
 		 * @param {!Uint8Array} segment_id
 		 */
 		_destroy_routing_path : (address, segment_id) !->
-			source_id			= concat_arrays([address, segment_id])
+			source_id			= concat_arrays(address, segment_id)
 			encryptor_instances	= @_encryptor_instances.get(source_id)
 			if !encryptor_instances
 				return

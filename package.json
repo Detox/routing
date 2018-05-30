@@ -7,7 +7,7 @@
 		"onion",
 		"anonymous"
 	],
-	"version"         : "0.3.1",
+	"version"         : "0.3.2",
 	"homepage"        : "https://github.com/Detox/routing",
 	"author"          : "Nazar Mokrynskyi <nazar@mokrynskyi.com>",
 	"repository"      : {
@@ -24,9 +24,9 @@
 	},
 	"dependencies"    : {
 		"@detox/crypto"          : "^0.7.1",
-		"@detox/transport"       : "^0.36.0",
-		"@detox/utils"           : "^1.9.0",
-		"async-eventer"          : "^1.1.6",
+		"@detox/transport"       : "^0.38.1",
+		"@detox/utils"           : "^1.10.0",
+		"async-eventer"          : "^1.1.7",
 		"fixed-size-multiplexer" : "^1.0.2",
 		"ronion"                 : "^0.7.0"
 	},
