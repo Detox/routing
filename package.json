@@ -31,7 +31,7 @@
 		"ronion"                 : "^0.7.0"
 	},
 	"devDependencies" : {
-		"build-gc" : "^0.1.1",
-		"tape"     : "^4.9.0"
+		"build-gc" : "^0.2.0",
+		"tape"     : "^4.9.1"
 	}
 }
